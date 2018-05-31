@@ -14,7 +14,7 @@ class BasicFiberWalk():
     
     def __init__(self, steps=100, outputsize=(200,200)):
         self.__lattice = HL.HexagonalLattice(outputsize=outputsize)
-        self.__pos = (0,0)
+        self.__pos = (2,0)
         self.walk(steps)
         
     def walk(self, goalsteps):
