@@ -28,7 +28,25 @@ def upper_left(point: np.ndarray) -> np.ndarray:
 def lower_left(point: np.ndarray) -> np.ndarray:
     return (left(lower_right(point)))
 
-class HexagonalLattice:
+def right_shared(point: np.ndarray) -> np.ndarray:
+    return upper_right(point), lower_right(point)
+
+def upper_right_shared(point: np.ndarray) -> np.ndarray:
+    return right(point), upper_left(point)
+
+def upper_left_shared(point: np.ndarray) -> np.ndarray:
+    return upper_right(point), left(point)
+
+def left_shared(point: np.ndarray) -> np.ndarray:
+    return upper_left(point), lower_left(point)
+
+def lower_left_shared(point: np.ndarray) -> np.ndarray:
+    return left(point), lower_right(point)
+
+def lower_right_shared(point: np.ndarray) -> np.ndarray:
+    return right(point), lower_left(point)
+
+class HexagonalLattice2D:
     
     def __init__(self, dim=2, size=0, outputsize=(200,200)):
         self.__dimension = dim
@@ -44,7 +62,6 @@ class HexagonalLattice:
             pos.append(float(0.0))
         self.add_vertex(pos, color="green")
         self.expand_lattice(pos)
-        print(self.__colors[0])
     
     def increase_size(self, size=1):
         self.__size+=size
