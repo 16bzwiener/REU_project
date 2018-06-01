@@ -14,49 +14,38 @@ class BasicFiberWalk():
     
     def __init__(self, steps=100, outputsize=(200,200)):
         self.__lattice = HL.HexagonalLattice(outputsize=outputsize)
-        self.__pos = (2,0)
+        self.__pos = (0,0)
         self.walk(steps)
+        
         
     def walk(self, goalsteps):
         times = 0
         steps = 0
         while steps < goalsteps and times < 6:
-            flag = False
-            times = 0
-            while not flag and times < 6:
-                rn = np.random.randint(6)
-                randpos = None
-                pos = np.array(self.__pos)
-                #valid_list = []
-                if rn == 0:
-                    randpos = HL.right(pos)
-                if rn == 1:
-                    randpos = HL.upper_right(pos)
-                if rn == 2:
-                    randpos = HL.upper_left(pos)
-                if rn == 3:
-                    randpos = HL.left(pos)
-                if rn == 4:
-                    randpos = HL.lower_left(pos)
-                if rn == 5:
-                    randpos = HL.lower_right(pos)
-                    
-                flag = self.__lattice.connect(self.__pos, randpos)
+
+            valid = self.__lattice.get_valid_neighbors(self.__pos)      
+            print(valid)
+            
+            if len(valid) > 0:
+                rand = np.random.randint(len(valid))
+                print(valid[rand])
                 
-                times+=1
+                self.__pos = valid[rand]
+                self.__lattice.change_node_color(self.__pos)
+                self.__lattice.expand_lattice(self.__pos)
+                
+                steps+=1
+                
+                self.display()
+            else:
+                print(steps)
+                print("root was blocked")
+                break
             
-            self.__pos = tuple(randpos)
-            
-            steps+=1
-            
-        self.display()
-            
-            #time.sleep(2)
-            
-        print()
+            time.sleep(.1)
             
         
     def display(self):
         self.__lattice.display()
         
-walk = BasicFiberWalk(steps = 500)
+walk = BasicFiberWalk(steps = 500, outputsize=(500,500))

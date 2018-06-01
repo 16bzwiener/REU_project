@@ -36,13 +36,15 @@ class HexagonalLattice:
         self.__outputsize = outputsize
         self.__GD = gt.Graph(directed=False)
         self.__pos = self.__GD.new_vertex_property("vector<double>")
+        self.__colors = self.__GD.new_vertex_property("string")
         self.__dictionary = dict()
         self.__lost_nodes = []
         pos = []
         for i in range(dim):
             pos.append(float(0.0))
-        self.add_vertex(pos)
+        self.add_vertex(pos, color="green")
         self.expand_lattice(pos)
+        print(self.__colors[0])
     
     def increase_size(self, size=1):
         self.__size+=size
@@ -58,31 +60,57 @@ class HexagonalLattice:
             return self.__dictionary[key]
         return self.__dictionary[tuple(key)]
     
+    def get_color_of_node(self, pos):
+        return self.__colors[self.get_from_dictionary(tuple(pos))]
+    
+    """
+    START WORKING HERE
+    
+    """
+    def get_valid_neighbors(self, pos):
+        color_of_pos = self.get_color_of_node(pos)
+         
+        valid_neighbors = []
+        
+        # later will add check to make sure the neighbor is not the neighbor
+        # of an already taken node
+        
+        for p in [right(pos), upper_right(pos), upper_left(pos), left(pos), lower_left(pos), lower_right(pos)]:
+            if color_of_pos != self.get_color_of_node(p):
+                valid_neighbors.append(tuple(p))   
+        return valid_neighbors
+            
+    
+    def is_lost_node(self, node_pos):
+        node_pos = tuple(node_pos)
+        if node_pos in self.__lost_nodes: return True
+        return False
+    
     # expand the lattice around a certain point
     def expand_lattice(self, pos):
         
         # right node
-        r = self.add_vertex(right(pos))
+        flag, r = self.add_vertex(right(pos))
         self.connect(pos, r)
         
         # upper right node
-        ur = self.add_vertex(upper_right(pos))
+        flag, ur = self.add_vertex(upper_right(pos))
         self.connect(pos, ur)
         
         # upper left node
-        ul = self.add_vertex(upper_left(pos))
+        flag, ul = self.add_vertex(upper_left(pos))
         self.connect(pos, ul)
         
         # left node
-        l = self.add_vertex(left(pos))
+        flag, l = self.add_vertex(left(pos))
         self.connect(pos, l)
         
         # lower left node
-        ll = self.add_vertex(lower_left(pos))
+        flag, ll = self.add_vertex(lower_left(pos))
         self.connect(pos, ll)
         
         # lower right node
-        lr = self.add_vertex(lower_right(pos))
+        flag, lr = self.add_vertex(lower_right(pos))
         self.connect(pos, lr)  
         
         # connect the outer boundary
@@ -92,24 +120,31 @@ class HexagonalLattice:
         self.connect(l, ll)
         self.connect(ll, lr)
         self.connect(lr, r)
+        
+    def change_node_color(self, pos, color="green"):
+        self.__colors[self.get_from_dictionary(pos)] = color
     
-    def connect(self, pos1, pos2):   
+    def connect(self, pos1, pos2):
+        flag = not self.is_lost_node(pos1)
         # check for node
-        if not self.cfn(pos2):
-            self.add_vertex(pos2)
+        if not self.cfn(pos2) and flag:
+            flag, pos = self.add_vertex(pos2)
             
         # check for edge
-        if not self.cfe(pos1, pos2):    
+        if flag and not self.cfe(pos1, pos2):    
             self.__GD.add_edge(self.get_vertex(pos1), self.get_vertex(pos2))
         else:
             print("STOPPED YOU!! :D")
         
-    def add_vertex(self, pos):
+    def add_vertex(self, pos, color="maroon"):
+        if self.is_lost_node(pos):
+            return False, pos
         if not self.cfn(pos):
             v = self.__GD.add_vertex()
             self.add_to_dict(tuple(pos), v)
             self.__pos[v] = pos
-        return pos
+            self.__colors[v] = color
+        return True, pos
     
     def del_vertex(self, pos):
         pos = tuple(pos)
@@ -170,14 +205,19 @@ class HexagonalLattice:
         
     # cfe = check for edge
     def cfe(self, pos1, pos2):
+        #try:
         neighbors = self.__GD.get_out_neighbors(self.get_from_dictionary(pos1))
         if self.get_from_dictionary(pos2) not in neighbors and tuple(pos1) != tuple(pos2):
             return False
         else:
             return True
+        #except KeyError:
+        #    return True
         
     # display the graph for the eyes to see  
     def display(self):
-        gt.graph_draw(self.__GD, pos=self.__pos, vertex_font_size=12,
+        #gt.graph_draw(self.__GD, pos=self.__pos, vertex_text=self.__GD.vertex_index, vertex_fill_color=self.__colors, vertex_shape="pentagon", vertex_font_size=12,
+        #    output_size=self.__outputsize)
+        gt.graph_draw(self.__GD, pos=self.__pos, vertex_fill_color=self.__colors, vertex_shape="pentagon", vertex_font_size=12,
             output_size=self.__outputsize)
         
