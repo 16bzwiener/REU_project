@@ -57,12 +57,15 @@ class ImprovedFiberWalk():
         self.__pos = tuple(np.zeros(dim, dtype=int))
         self.__pos_list = [self.__pos]
         self.__off_limits = set()
+        self.__off_limits.add(tuple(HL.upper_right(self.__pos)))
+        self.__lattice.change_node_color(HL.upper_right(self.__pos), color="maroon")
+        self.__off_limits.add(tuple(HL.upper_left(self.__pos)))
+        self.__lattice.change_node_color(HL.upper_left(self.__pos), color="maroon")
         
     def step(self):
         
-        valid = self.__lattice.get_valid_neighbors(self.__pos)
+        valid = self.__lattice.get_valid_neighbors(self.__pos, color="orange")
         
-        new_valid = []
         for v in valid[:]:
             if tuple(v) in self.__off_limits:
                 valid.remove(tuple(v))
