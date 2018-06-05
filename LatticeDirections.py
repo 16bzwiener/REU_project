@@ -8,7 +8,8 @@ Created on Mon Jun  4 14:04:04 2018
 
 import numpy as np
 
-sot = np.sqrt(3)
+sot = 2
+#sot = np.sqrt(3)
 
 # 2-D directions     
 def right(point: np.ndarray) -> np.ndarray:
@@ -29,6 +30,48 @@ def upper_left(point: np.ndarray) -> np.ndarray:
 def lower_left(point: np.ndarray) -> np.ndarray:
     return (left(lower_right(point)))
 
-def Two_D_Expansion(pos):
-    return [right(pos), upper_right(pos), upper_left(pos), 
-            left(pos), lower_left(pos), lower_right(pos)]
+def right_shared(point: np.ndarray) -> np.ndarray:
+    return upper_right(point), lower_right(point)
+
+def upper_right_shared(point: np.ndarray) -> np.ndarray:
+    return right(point), upper_left(point)
+
+def upper_left_shared(point: np.ndarray) -> np.ndarray:
+    return upper_right(point), left(point)
+
+def left_shared(point: np.ndarray) -> np.ndarray:
+    return upper_left(point), lower_left(point)
+
+def lower_left_shared(point: np.ndarray) -> np.ndarray:
+    return left(point), lower_right(point)
+
+def lower_right_shared(point: np.ndarray) -> np.ndarray:
+    return right(point), lower_left(point)
+
+def two_d_expansion(pos):
+    
+    moves = [right(pos), upper_right(pos), upper_left(pos), left(pos), 
+             lower_left(pos), lower_right(pos)]
+    
+    vertice_pos = []
+    
+    for m in moves:
+        vertice_pos.append(tuple(m))
+    
+    edges = []
+    
+    for p in vertice_pos:
+        edges.append([pos, p])
+    
+    length = len(vertice_pos)
+    for i in range(length):
+        if i < length-1:
+            edges.append([vertice_pos[i], vertice_pos[i+1]])
+        else:
+            edges.append([vertice_pos[0], vertice_pos[length - 1]])
+    
+    return vertice_pos, edges
+    
+def surrounding(pos, dim=2):
+    if dim == 2:
+        return two_d_expansion(pos)
