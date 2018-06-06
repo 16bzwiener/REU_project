@@ -177,13 +177,44 @@ class HexagonalLattice:
         # connect all the needed edges
         for e in edges:
             self.connect(e[0], e[1])
+            
+    def del_vertex(self, pos):
+        pos = tuple(pos)
+        pos_index = self.__dictionary.pop(pos, None)
+        
+        # if the vertex we are deleting was there
+        if pos_index is not None:            
+            last_index = self.get_last_index()
+            last_node = self.__dictionary.pop(last_index)
+            self.__dictionary.pop(last_node)
+            self.add_to_dict(last_node, pos_index)
+            self.increase_size(size=-1)
+    
+            self.__lost_nodes.add(pos)
+            self.__Graph.remove_vertex(pos_index, fast=True)
+            
+            # has to be -2 ...adding to the dictionary above increments size
+            self.increase_size(size=-1)
+            last_index = self.get_last_index()
+            last_node = self.get_from_dictionary(last_index)
+        else:
+            print("NOOOOO")
+            
+    # take-over of node at pos2 by node at pos1
+    def take_over_node(self, pos1, pos2):
+        self.expand_lattice(pos2)
+        i = self.get_from_dictionary(pos2)
+        neighbors = self.__Graph.get_out_neighbors(i)
+        for n in neighbors:
+            self.connect(pos1, self.get_from_dictionary(int(n)))
+        self.del_vertex(pos2)
     
     # display the graph for the eyes to see  
-    def display(self, step):
+    def display(self, step=None):
         #gt.graph_draw(self.__GD, pos=self.__pos, vertex_text=self.__GD.vertex_index, vertex_fill_color=self.__colors, vertex_shape="pentagon", vertex_font_size=12,
         #    output_size=self.__outputsize)
         gt.graph_draw(self.__Graph, pos=self.__pos, vertex_fill_color=self.__colors, vertex_shape="hexagon", vertex_font_size=12,
-            output_size=self.__outputsize, output="two-nodes" + str(step) + ".png")
+            output_size=self.__outputsize)
     
     # increases size by one if no parameters added
     # if parameter is entered changes size by that much
@@ -227,91 +258,82 @@ def find_off_limits(pos):
     p = LD.right(LD.right(pos))
     if lattice.get_color_of_node(p) == color:
         if lattice.get_color_of_node(surround[0]) != "purple":
-            lattice.set_node_color(surround[0], "red")        
+            lattice.set_node_color(surround[0], "maroon")        
     
     p = LD.upper_left(p)
     if lattice.get_color_of_node(p) == color:
         if lattice.get_color_of_node(surround[0]) != "purple":
-            lattice.set_node_color(surround[0], "red")
+            lattice.set_node_color(surround[0], "maroon")
         if lattice.get_color_of_node(surround[1]) != "purple":
-            lattice.set_node_color(surround[1], "red")
+            lattice.set_node_color(surround[1], "maroon")
 
     p = LD.upper_left(p)
     if lattice.get_color_of_node(p) == color:
         if lattice.get_color_of_node(surround[1]) != "purple":
-            lattice.set_node_color(surround[1], "red")
+            lattice.set_node_color(surround[1], "maroon")
     
     p = LD.left(p)
     if lattice.get_color_of_node(p) == color:
         if lattice.get_color_of_node(surround[1]) != "purple":
-            lattice.set_node_color(surround[1], "red")
+            lattice.set_node_color(surround[1], "maroon")
         if lattice.get_color_of_node(surround[2]) != "purple":
-            lattice.set_node_color(surround[2], "red")
+            lattice.set_node_color(surround[2], "maroon")
 
     p = LD.left(p)
     if lattice.get_color_of_node(p) == color:
         if lattice.get_color_of_node(surround[2]) != "purple":
-            lattice.set_node_color(surround[2], "red")
+            lattice.set_node_color(surround[2], "maroon")
     
     p = LD.lower_left(p)
     if lattice.get_color_of_node(p) == color:
         if lattice.get_color_of_node(surround[2]) != "purple":
-            lattice.set_node_color(surround[2], "red")
+            lattice.set_node_color(surround[2], "maroon")
         if lattice.get_color_of_node(surround[3]) != "purple":
-            lattice.set_node_color(surround[3], "red")
+            lattice.set_node_color(surround[3], "maroon")
     
     p = LD.lower_left(p)
     if lattice.get_color_of_node(p) == color:
         if lattice.get_color_of_node(surround[3]) != "purple":
-            lattice.set_node_color(surround[3], "red")
+            lattice.set_node_color(surround[3], "maroon")
     
     p = LD.lower_right(p)
     if lattice.get_color_of_node(p) == color:
         if lattice.get_color_of_node(surround[3]) != "purple":
-            lattice.set_node_color(surround[3], "red")
+            lattice.set_node_color(surround[3], "maroon")
         if lattice.get_color_of_node(surround[4]) != "purple":
-            lattice.set_node_color(surround[4], "red")
+            lattice.set_node_color(surround[4], "maroon")
 
     p = LD.lower_right(p)
     if lattice.get_color_of_node(p) == color:
         if lattice.get_color_of_node(surround[4]) != "purple":
-            lattice.set_node_color(surround[4], "red")
+            lattice.set_node_color(surround[4], "maroon")
     
     p = LD.right(p)
     if lattice.get_color_of_node(p) == color:
         if lattice.get_color_of_node(surround[4]) != "purple":
-            lattice.set_node_color(surround[4], "red")
+            lattice.set_node_color(surround[4], "maroon")
         if lattice.get_color_of_node(surround[5]) != "purple":
-            lattice.set_node_color(surround[5], "red")
+            lattice.set_node_color(surround[5], "maroon")
 
     p = LD.right(p)
     if lattice.get_color_of_node(p) == color:
         if lattice.get_color_of_node(surround[5]) != "purple":
-            lattice.set_node_color(surround[5], "red")
+            lattice.set_node_color(surround[5], "maroon")
 
     
     p = LD.upper_right(p)
     if lattice.get_color_of_node(p) == color:
         if lattice.get_color_of_node(surround[5]) != "purple":
-            lattice.set_node_color(surround[5], "red")
+            lattice.set_node_color(surround[5], "maroon")
         if lattice.get_color_of_node(surround[0]) != "purple":
-            lattice.set_node_color(surround[0], "red")
-    '''
-    for p in sec_surrounding:
-        if lattice.get_color_of_node(p) == color:
-            neighb = direction(pos, p)
-            if lattice.get_color_of_node(neighb[0]) not in ["orange", "purple"]:
-                lattice.set_node_color(neighb[0], "red")
-            if lattice.get_color_of_node(neighb[1]) not in ["orange", "purple"]:
-                lattice.set_node_color(neighb[1], "red")
-'''
+            lattice.set_node_color(surround[0], "maroon")
+
 def step(pos, valid_prev):
         
     valid, _ = LD.surrounding(pos)
     for i in valid[:]:
         if lattice.get_color_of_node(pos=i) != "orange" or i in valid_prev:
             valid.remove(i)
-            print("yea!")
     
     if len(valid) > 0:
         rand = np.random.randint(len(valid))
@@ -322,37 +344,19 @@ def step(pos, valid_prev):
     find_off_limits(pos)
         
     return tuple(pos), valid    
-    '''
-    if len(valid) > 0:
-        rand = np.random.randint(len(valid))
-        rand = valid[rand]
-
-        for i in valid:
-            self.__off_limits.add(tuple(i))
-        self.__pos = rand
-        self.__lattice.change_node_color(self.__pos)
-        self.__lattice.expand_lattice(self.__pos)
-        self.__pos_list.append(self.__pos)
-        
-        
-        self.display()
-        #time.sleep(2)
-        return False
-    else:
-        print("root was blocked")
-        print(self.__pos_list)
-        return True
-    '''
 
 def contraction(pos):
-    return 1
+    list = LD.contraction(pos)
+    for p in list:
+        lattice.take_over_node(pos, p)
 
-for i in range(100):
+for i in range(10):
     flag = pos
     pos, valid = step(pos, valid)
     if pos == flag:
         break
     print(pos)
-    lattice.display(i)
+    lattice.display()
 
-find_off_limits((0,0))
+print(contraction((0,0)))
+lattice.display()

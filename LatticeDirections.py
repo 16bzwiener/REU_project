@@ -71,7 +71,20 @@ def two_d_expansion(pos):
             edges.append([vertice_pos[0], vertice_pos[length - 1]])
     
     return vertice_pos, edges
+
+def two_d_contraction(pos):
+    randnum = np.random.randint(3)
+    if randnum == 0:
+        return [right(pos), left(pos)]
+    elif randnum == 1:
+        return [upper_right(pos), lower_left(pos)]
+    else:
+        return [lower_right(pos), upper_left(pos)]
     
 def surrounding(pos, dim=2):
     if dim == 2:
         return two_d_expansion(pos)
+    
+def contraction(pos, dim=2):
+    if dim == 2:
+        return two_d_contraction(pos)
