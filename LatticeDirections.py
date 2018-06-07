@@ -48,10 +48,19 @@ def lower_left_shared(point: np.ndarray) -> np.ndarray:
 def lower_right_shared(point: np.ndarray) -> np.ndarray:
     return right(point), lower_left(point)
 
-def two_d_expansion(pos):
+def two_d_expansion(pos, settings=0):
     
-    moves = [right(pos), upper_right(pos), upper_left(pos), left(pos), 
-             lower_left(pos), lower_right(pos)]
+    arr = np.array(pos)
+    
+    moves = []
+    if settings == 0 or arr[1] >= 50:
+        moves = [right(pos), right(pos), upper_right(pos), upper_left(pos), left(pos), left(pos), 
+             lower_left(pos), lower_left(pos), lower_left(pos), lower_right(pos), lower_right(pos), lower_right(pos)]
+    elif arr[1] == 0:
+        moves = [lower_left(pos), lower_right(pos)]
+    elif arr[1] < 50:
+        moves = [right(pos), right(pos), left(pos), left(pos), 
+             lower_left(pos), lower_left(pos), lower_left(pos), lower_right(pos), lower_right(pos), lower_right(pos)]
     
     vertice_pos = []
     
@@ -81,9 +90,9 @@ def two_d_contraction(pos):
     else:
         return [lower_right(pos), upper_left(pos)]
     
-def surrounding(pos, dim=2):
+def surrounding(pos, dim=2, setting=0):
     if dim == 2:
-        return two_d_expansion(pos)
+        return two_d_expansion(pos, setting)
     
 def contraction(pos, dim=2):
     if dim == 2:
