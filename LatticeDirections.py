@@ -50,17 +50,22 @@ def lower_right_shared(point: np.ndarray) -> np.ndarray:
 
 def two_d_expansion(pos, settings=0):
     
-    arr = np.array(pos)
-    
     moves = []
-    if settings == 0 or arr[1] >= 50:
-        moves = [right(pos), right(pos), upper_right(pos), upper_left(pos), left(pos), left(pos), 
-             lower_left(pos), lower_left(pos), lower_left(pos), lower_right(pos), lower_right(pos), lower_right(pos)]
-    elif arr[1] == 0:
-        moves = [lower_left(pos), lower_right(pos)]
-    elif arr[1] < 50:
-        moves = [right(pos), right(pos), left(pos), left(pos), 
-             lower_left(pos), lower_left(pos), lower_left(pos), lower_right(pos), lower_right(pos), lower_right(pos)]
+    
+    if settings == 0:
+        moves = [right(pos), upper_right(pos), left(pos),
+             lower_left(pos),lower_right(pos)]
+    else:    
+        arr = np.array(pos)
+        
+        if arr[1] == 0:
+            moves = [lower_left(pos), lower_right(pos)]
+        elif arr[1] < 50:
+            moves = [right(pos), right(pos), left(pos), left(pos), 
+                 lower_left(pos), lower_left(pos), lower_left(pos), lower_right(pos), lower_right(pos), lower_right(pos)]
+        else:
+            moves = [right(pos), right(pos), upper_right(pos), upper_left(pos), left(pos), left(pos), 
+                 lower_left(pos), lower_left(pos), lower_left(pos), lower_right(pos), lower_right(pos), lower_right(pos)]
     
     vertice_pos = []
     

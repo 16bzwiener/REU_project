@@ -9,6 +9,7 @@ Created on Mon Jun  4 14:11:03 2018
 import numpy as np
 import graph_tool.all as gt
 import LatticeDirections as LD
+import time
 
 class HexagonalLattice:
     
@@ -164,10 +165,10 @@ class HexagonalLattice:
                 
             self.__colors[self.get_from_dictionary(pos)] = color
         
-        # expand the lattice around a certain point
+    # expand the lattice around a certain point
     def expand_lattice(self, pos):
         
-        # pull the 
+        # get the surrounding vertices and the needed edges
         surrounding, edges =  LD.surrounding(pos=pos, dim=self.__dim)
         
         # create the new vertices
@@ -211,18 +212,20 @@ class HexagonalLattice:
     
     # display the graph for the eyes to see  
     def display(self, step=None):
-        #gt.graph_draw(self.__GD, pos=self.__pos, vertex_text=self.__GD.vertex_index, vertex_fill_color=self.__colors, vertex_shape="pentagon", vertex_font_size=12,
+        #gt.graph_draw(self.__Graph, pos=self.__pos, vertex_text=self.__Graph.vertex_index, vertex_fill_color=self.__colors, vertex_shape="pentagon", vertex_font_size=12,
         #    output_size=self.__outputsize)
+        #gt.graph_draw(self.__Graph, pos=self.__pos, vertex_fill_color=self.__colors, vertex_shape="hexagon", vertex_font_size=12,
+        #    output_size=self.__outputsize, output="../20steps.png")
         gt.graph_draw(self.__Graph, pos=self.__pos, vertex_fill_color=self.__colors, vertex_shape="hexagon", vertex_font_size=12,
-            output_size=self.__outputsize, output="../two-nodes.png")
+            output_size=self.__outputsize)
     
     # increases size by one if no parameters added
     # if parameter is entered changes size by that much
     def increase_size(self, size=1):
         self.__size+=size
-        
+'''        
 root_color = "green"        
-lattice = HexagonalLattice(color="orange", outputsize=(2000,2000))
+lattice = HexagonalLattice(color="orange", outputsize=(500,500))
 lattice.set_node_color(pos=(0,0), color=root_color)
 pos = (0,0)
 valid = []
@@ -353,18 +356,20 @@ posList = [pos]
 currentTips = [pos]
 
 # this branches
-for i in range(50):
+for i in range(5):
     for p in currentTips[:]:
         currentTips.remove(p)
         rand = np.random.randint(100)
         pos, valid = step(p, valid)
         posList.append(pos)
         currentTips.append(pos)
-        if rand > 25 and rand < 55 and posList[i] != posList[i+1]:
+        if rand > 45 and rand < 55 and posList[i] != posList[i+1]:
             currentTips.append(p)
-        #lattice.display()
+        time.sleep(2)
+        lattice.display()
     if len(currentTips) == 0:
         break
     print(i)
 
 lattice.display()
+'''
