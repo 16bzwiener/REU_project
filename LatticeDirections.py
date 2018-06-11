@@ -53,7 +53,7 @@ def two_d_expansion(pos, settings=0):
     moves = []
     
     if settings == 0:
-        moves = [right(pos), upper_right(pos), left(pos),
+        moves = [right(pos), upper_right(pos), upper_left(pos), left(pos),
              lower_left(pos),lower_right(pos)]
     else:    
         arr = np.array(pos)

@@ -12,7 +12,7 @@ import numpy as np
 import time
 
 root_color = "green"        
-lattice = HL.HexagonalLattice(color="orange", outputsize=(500,500))
+lattice = HL.HexagonalLattice(vertex_color="orange", outputsize=(2000,2000))
 lattice.set_node_color(pos=(0,0), color=root_color)
 pos = (0,0)
 valid = []
@@ -23,7 +23,7 @@ class BranchingFW:
         self.__lattice = HL.HexagonalLattice(outputsize=outputsize)
         self.__pos = tuple(np.zeros(dim))
         self.__pos_list = [[self.__pos]]
-        self.walk(steps)
+        self.walk()
 
     def direction(self, pos1, pos2):
         pos1 = tuple(pos1)
@@ -54,7 +54,7 @@ class BranchingFW:
     
 walk = BranchingFW()
 
-'''
+
 def find_off_limits(pos):
     
     color = lattice.get_color_of_node(pos)
@@ -147,12 +147,12 @@ def step(pos, valid_prev):
         lattice.set_node_color(pos=pos, color=root_color)
         lattice.expand_lattice(pos)
         
-    find_off_limits(pos)
+    #find_off_limits(pos)
         
     return tuple(pos), valid    
 
 def contraction(pos):
-    list = LD.contraction(pos)
+    
     for p in list:
         lattice.take_over_node(pos, p)
         
@@ -160,20 +160,21 @@ posList = [pos]
 currentTips = [pos]
 
 # this branches
-for i in range(5):
+for i in range(50):
     for p in currentTips[:]:
         currentTips.remove(p)
         rand = np.random.randint(100)
         pos, valid = step(p, valid)
+        if p != pos:
+            lattice.set_edge_color(p,pos,(0,.5,0,.5))
         posList.append(pos)
         currentTips.append(pos)
         if rand > 45 and rand < 55 and posList[i] != posList[i+1]:
             currentTips.append(p)
-        time.sleep(2)
-        lattice.display()
+        #time.sleep(2)
+        #lattice.display()
     if len(currentTips) == 0:
         break
     print(i)
 
 lattice.display()
-'''

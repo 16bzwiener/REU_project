@@ -14,7 +14,7 @@ import time
 class HexagonalLattice:
     
     # construct the lattice :D
-    def __init__(self, pos=(0,0), outputsize=(500,500), color="green", dim=2):
+    def __init__(self, pos=(0,0), outputsize=(500,500), vertex_color="orange", dim=2):
         
         # fields of this class include outputsize, size, Graph, pos vertex prop,
         # colors vertex property, dictionary (dict), lost nodes (set), 
@@ -23,10 +23,11 @@ class HexagonalLattice:
         self.__size = 0
         self.__Graph = gt.Graph(directed=False)
         self.__pos = self.__Graph.new_vertex_property("vector<double>")
-        self.__colors = self.__Graph.new_vertex_property("string")
+        self.__vertex_colors = self.__Graph.new_vertex_property("string")
+        self.__edge_colors = self.__Graph.new_edge_property("vector<double>")
         self.__dictionary = dict()
         self.__lost_nodes = set()
-        self.__main_color = color
+        self.__main_color = vertex_color
         self.__dim = dim
         
         # add the initial vertex and expand the lattice
@@ -49,7 +50,7 @@ class HexagonalLattice:
             
             # set the coordinate pos and color for the node
             self.__pos[v] = pos
-            self.__colors[v] = self.__main_color
+            self.__vertex_colors[v] = self.__main_color
         
         # return true since there is a node there
         return True, pos
@@ -81,9 +82,13 @@ class HexagonalLattice:
     # what color is the node here? RETURN IT!
     def get_color_of_node(self, pos):
         if tuple(pos) in self.__dictionary:
-            return self.__colors[self.get_from_dictionary(tuple(pos))]
+            return self.__vertex_colors[self.get_from_dictionary(tuple(pos))]
         
         return None
+    
+    # get the color of the edge
+    def get_color_of_edge(self, pos1, pos2): 
+        return self.__edge_color[self.get_edge(pos1,pos2)]
     
     # get dictionary method
     def get_dictionary(self):
@@ -100,6 +105,9 @@ class HexagonalLattice:
     # get vertex at pos
     def get_vertex(self, pos):
         return self.__Graph.vertex(self.get_from_dictionary(pos))
+    
+    def get_edge(self, pos1, pos2):
+        return self.__Graph.edge(self.get_from_dictionary(pos1), self.get_from_dictionary(pos2))
     
     # get lost nodes set
     def get_lost_nodes(self):
@@ -131,7 +139,7 @@ class HexagonalLattice:
             
         # check for edge, if there isn't one add an edge
         if lost_node and not self.cfe(pos1, pos2):    
-            self.__Graph.add_edge(self.get_vertex(pos1), self.get_vertex(pos2))
+            self.__edge_colors[self.__Graph.add_edge(self.get_vertex(pos1), self.get_vertex(pos2))] = (.8, .5, 0, .5)
         else:
             print("STOPPED YOU!! :D")
             
@@ -163,7 +171,11 @@ class HexagonalLattice:
             if color is None:
                 color = self.__main_color
                 
-            self.__colors[self.get_from_dictionary(pos)] = color
+            self.__vertex_colors[self.get_from_dictionary(pos)] = color
+            
+    def set_edge_color(self, pos1, pos2, color):
+        e = self.__Graph.edge(self.get_vertex(pos1), self.get_vertex(pos2))
+        self.__edge_colors[e] = color
         
     # expand the lattice around a certain point
     def expand_lattice(self, pos):
@@ -216,8 +228,14 @@ class HexagonalLattice:
         #    output_size=self.__outputsize)
         #gt.graph_draw(self.__Graph, pos=self.__pos, vertex_fill_color=self.__colors, vertex_shape="hexagon", vertex_font_size=12,
         #    output_size=self.__outputsize, output="../20steps.png")
-        gt.graph_draw(self.__Graph, pos=self.__pos, vertex_fill_color=self.__colors, vertex_shape="hexagon", vertex_font_size=12,
-            output_size=self.__outputsize)
+        gt.graph_draw(self.__Graph, 
+                      pos=self.__pos, 
+                      vertex_fill_color=self.__vertex_colors,
+                      edge_color=self.__edge_colors,
+                      vertex_shape="hexagon", 
+                      vertex_font_size=12,
+                      output_size=self.__outputsize,
+                      output="../no-node-avoidance.png")
     
     # increases size by one if no parameters added
     # if parameter is entered changes size by that much
