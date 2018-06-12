@@ -106,12 +106,21 @@ class HexagonalLattice:
     def get_vertex(self, pos):
         return self.__Graph.vertex(self.get_from_dictionary(pos))
     
+    # get edge that connects the two positions
     def get_edge(self, pos1, pos2):
         return self.__Graph.edge(self.get_from_dictionary(pos1), self.get_from_dictionary(pos2))
     
     # get lost nodes set
     def get_lost_nodes(self):
         return self.__lost_nodes
+    
+    def get_neighbors(self, pos, sys=0):
+        if sys == 0:
+            return list(self.__Graph.get_out_neighbors(self.get_from_dictionary(pos)))
+        neigh = []
+        for n in list(self.__Graph.get_out_neighbors(self.get_from_dictionary(pos))):
+            neigh.append(self.get_from_dictionary(int(n)))
+        return neigh
     
     # does this position contain a lost node?
     def is_lost_node(self, node_pos):
@@ -223,19 +232,30 @@ class HexagonalLattice:
         self.del_vertex(pos2)
     
     # display the graph for the eyes to see  
-    def display(self, step=None):
+    def display(self, save=0, outputsize=(500,500)):
         #gt.graph_draw(self.__Graph, pos=self.__pos, vertex_text=self.__Graph.vertex_index, vertex_fill_color=self.__colors, vertex_shape="pentagon", vertex_font_size=12,
         #    output_size=self.__outputsize)
         #gt.graph_draw(self.__Graph, pos=self.__pos, vertex_fill_color=self.__colors, vertex_shape="hexagon", vertex_font_size=12,
         #    output_size=self.__outputsize, output="../20steps.png")
-        gt.graph_draw(self.__Graph, 
+        if save == 0:
+            gt.graph_draw(self.__Graph, 
                       pos=self.__pos, 
                       vertex_fill_color=self.__vertex_colors,
                       edge_color=self.__edge_colors,
                       vertex_shape="hexagon", 
                       vertex_font_size=12,
-                      output_size=self.__outputsize,
-                      output="../no-node-avoidance.png")
+                      output_size=outputsize,
+                      vertex_text=self.__Graph.vertex_index)
+        else:
+            gt.graph_draw(self.__Graph, 
+                      pos=self.__pos, 
+                      vertex_fill_color=self.__vertex_colors,
+                      edge_color=self.__edge_colors,
+                      vertex_shape="hexagon", 
+                      vertex_font_size=12,
+                      output_size=outputsize,
+                      output="../contract.png",
+                      vertex_text=self.__Graph.vertex_index)
     
     # increases size by one if no parameters added
     # if parameter is entered changes size by that much
