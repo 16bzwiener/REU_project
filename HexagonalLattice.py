@@ -114,13 +114,12 @@ class HexagonalLattice:
     def get_lost_nodes(self):
         return self.__lost_nodes
     
-    def get_neighbors(self, pos, sys=0):
-        if sys == 0:
-            return list(self.__Graph.get_out_neighbors(self.get_from_dictionary(pos)))
+    def get_neighbors(self, pos):
+        indices = list(self.__Graph.get_out_neighbors(self.get_from_dictionary(pos)))
         neigh = []
-        for n in list(self.__Graph.get_out_neighbors(self.get_from_dictionary(pos))):
+        for n in indices:
             neigh.append(self.get_from_dictionary(int(n)))
-        return neigh
+        return indices, neigh
     
     # does this position contain a lost node?
     def is_lost_node(self, node_pos):
@@ -135,7 +134,17 @@ class HexagonalLattice:
     # contribute to the set of lost nodes
     def add_lost_node(self, node_pos):
         self.__lost_nodes.add(node_pos)
-        
+    
+    # get direction vector
+    def get_direction_vector(self, pos1, pos2):
+        m = np.matrix([[1, 0], [0, (3/4)**(1/2)]])
+        dif = np.subtract(pos2, pos1)
+        dif = np.array(dif*m)[0]
+        mag = (dif[0]**2 + dif[1]**2)**(1/2)
+        soe = sum(np.absolute(dif))
+        direction = dif/soe
+        return direction
+    
     # connect two vertices (nodes) with an edge
     def connect(self, pos1, pos2):
         
