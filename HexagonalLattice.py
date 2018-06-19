@@ -88,7 +88,7 @@ class HexagonalLattice:
     
     # get the color of the edge
     def get_color_of_edge(self, pos1, pos2): 
-        return self.__edge_color[self.get_edge(pos1,pos2)]
+        return self.__edge_colors[self.get_edge(pos1,pos2)]
     
     # get dictionary method
     def get_dictionary(self):
@@ -115,7 +115,7 @@ class HexagonalLattice:
         return self.__lost_nodes
     
     def get_neighbors(self, pos):
-        indices = list(self.__Graph.get_out_neighbors(self.get_from_dictionary(pos)))
+        indices = self.__Graph.get_out_neighbors(self.get_from_dictionary(pos))
         neigh = []
         for n in indices:
             neigh.append(self.get_from_dictionary(int(n)))
@@ -137,10 +137,7 @@ class HexagonalLattice:
     
     # get direction vector
     def get_direction_vector(self, pos1, pos2):
-        m = np.matrix([[1, 0], [0, (3/4)**(1/2)]])
         dif = np.subtract(pos2, pos1)
-        dif = np.array(dif*m)[0]
-        mag = (dif[0]**2 + dif[1]**2)**(1/2)
         soe = sum(np.absolute(dif))
         direction = dif/soe
         return direction
@@ -212,11 +209,12 @@ class HexagonalLattice:
     def del_vertex(self, pos):
         pos = tuple(pos)
         pos_index = self.__dictionary.pop(pos, None)
-        
+
         # if the vertex we are deleting was there
         if pos_index is not None:            
             last_index = self.get_last_index()
             last_node = self.__dictionary.pop(last_index)
+        
             self.__dictionary.pop(last_node)
             self.add_to_dict(last_node, pos_index)
             self.increase_size(size=-1)
@@ -239,6 +237,7 @@ class HexagonalLattice:
         for n in neighbors:
             self.connect(pos1, self.get_from_dictionary(int(n)))
         self.del_vertex(pos2)
+        self.__Graph.reindex_edges()
     
     # display the graph for the eyes to see  
     def display(self, save=0, outputsize=(500,500)):
@@ -254,7 +253,8 @@ class HexagonalLattice:
                       vertex_shape="hexagon", 
                       vertex_font_size=12,
                       output_size=outputsize,
-                      vertex_text=self.__Graph.vertex_index)
+                      vertex_text=self.__Graph.vertex_index
+                      )
         else:
             gt.graph_draw(self.__Graph, 
                       pos=self.__pos, 
@@ -263,8 +263,8 @@ class HexagonalLattice:
                       vertex_shape="hexagon", 
                       vertex_font_size=12,
                       output_size=outputsize,
-                      output="../contract.png",
-                      vertex_text=self.__Graph.vertex_index)
+                      output="../contract.png"
+                      )
     
     # increases size by one if no parameters added
     # if parameter is entered changes size by that much
