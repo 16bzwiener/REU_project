@@ -25,9 +25,9 @@ class BranchingFW:
         self.__lattice.set_node_color(pos=self.__pos, color=self.__root_node_color)
         #self.walk()
             
-    def step(self):
+    def step(self, pos):
         
-        _, valid = self.__lattice.get_neighbors(self.__pos)#LD.surrounding(pos, setting=0) #[LD.right(pos)], 1
+        _, valid = self.__lattice.get_neighbors(pos)#LD.surrounding(pos, setting=0) #[LD.right(pos)], 1
         
         for i in valid[:]:
             if self.__lattice.get_color_of_node(pos=i) != "orange":
@@ -36,10 +36,11 @@ class BranchingFW:
         if len(valid) > 0:
             rand = np.random.randint(len(valid))
             self.__pos = valid[rand]
-            if hash(self.__pos) == hash(self.__pos_list[-1][2]):
+            if hash(self.__pos) == hash(pos):
                 return False
             self.__pos_list.append([self.__pos, 1, self.__pos_list[-1][0]])
             self.__lattice.set_node_color(pos=self.__pos, color=self.__root_node_color)
+            self.__lattice.set_edge_color(self.__pos,pos,self.__root_edge_color)
             self.__lattice.expand_lattice(self.__pos)
             self.__lattice.display()
             return True
@@ -52,17 +53,22 @@ class BranchingFW:
         else: 
             return False
     
-    def expand(self):
-        indices, neighb = self.__lattice.get_neighbors(self.__pos_list[-2][0])
+    def expand(self, pos):
+        indices, neighb = self.__lattice.get_neighbors(pos)
         directions = []
         
         for n in neighb[:]:
-            if self.__lattice.get_color_of_edge(self.__pos_list[-2][0], n) == self.__root_edge_color:
+            if self.__lattice.get_color_of_node(n) == self.__root_node_color:
+                print('removed')
                 neighb.remove(n)
         
         for i, n in enumerate(neighb):
-            direc = self.__lattice.get_direction_vector(self.__pos, n)   
+            direc = self.__lattice.get_direction_vector(pos, n)   
             directions.append(direc)
+        
+        
+        print(directions)
+        print(pos)
         
         pairs = []
         
@@ -78,29 +84,35 @@ class BranchingFW:
                         
         randIndex = np.random.randint(len(pairs))
         pairIndex = pairs[randIndex]
-        self.__lattice.take_over_node(self.__pos_list[-2][0], neighb[randIndex])
+        self.__lattice.take_over_node(pos, neighb[randIndex])
+        print(pairs)
         if pairIndex != -1:
-            self.__lattice.take_over_node(self.__pos_list[-2][0], neighb[pairIndex])
+            print("NOT NEGATIVE ONE")
+            self.__lattice.take_over_node(pos, neighb[pairIndex])
+        else:
+            print("WAS NEGATIVE ONE")
             
     def walk(self, steps=2, j=2):
         for i in range(steps):
             for p in self.__current_tips[:]:
+                print(list(self.__lattice.get_edge_colors()))
                 self.__lattice.display()
                 self.__pos = p
                 self.__current_tips.remove(p)
-                if not self.step():
+                if not self.step(p):
                     continue
-                self.__lattice.set_edge_color(self.__pos,self.__pos_list[-2][0],self.__root_edge_color)
                 self.__current_tips.append(self.__pos)
-                self.expand()
+                self.expand(self.__pos_list[-1][-1])
                 rand = self.branch()
                 if rand and self.__pos_list[i] != self.__pos_list[i+1]:
                     self.__current_tips.append(p)
                     
                 
             if len(self.__current_tips) == 0:
-                break
-        self.__lattice.display()   
+                break 
+        
+        print(list(self.__lattice.get_edge_colors()))
+        self.__lattice.display()
         
         '''
         # this branches

@@ -22,6 +22,7 @@ class HexagonalLattice:
         self.__outputsize = outputsize
         self.__size = 0
         self.__Graph = gt.Graph(directed=False)
+        self.__Graph.set_fast_edge_removal()
         self.__pos = self.__Graph.new_vertex_property("vector<double>")
         self.__vertex_colors = self.__Graph.new_vertex_property("string")
         self.__edge_colors = self.__Graph.new_edge_property("vector<double>")
@@ -94,6 +95,9 @@ class HexagonalLattice:
     def get_dictionary(self):
         return self.__dictionary
     
+    def get_edge_colors(self):
+        return self.__edge_colors
+    
     # get size method
     def get_size(self):
         return self.__size
@@ -137,9 +141,11 @@ class HexagonalLattice:
     
     # get direction vector
     def get_direction_vector(self, pos1, pos2):
+        print(pos2, '-', pos1)
         dif = np.subtract(pos2, pos1)
         soe = sum(np.absolute(dif))
         direction = dif/soe
+        print(dif, '/', soe, ' = ', direction)
         return direction
     
     # connect two vertices (nodes) with an edge
@@ -164,7 +170,7 @@ class HexagonalLattice:
         # find the neighbors of vertex at pos 1
         neighbors = self.__Graph.get_out_neighbors(self.get_from_dictionary(pos1))
         
-        # if the vertex at pos 2 is a neighbor and pos 1 is not equal to pos 2
+        # if the vertex at pos 2 is not a neighbor and pos 1 is not equal to pos 2
         if self.get_from_dictionary(pos2) not in neighbors and tuple(pos1) != tuple(pos2):
             return False
         else:
