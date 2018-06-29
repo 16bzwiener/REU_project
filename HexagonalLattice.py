@@ -25,7 +25,7 @@ class HexagonalLattice:
         self.__Graph.set_fast_edge_removal()
         self.__pos = self.__Graph.new_vertex_property("vector<double>")
         self.__vertex_colors = self.__Graph.new_vertex_property("string")
-        self.__edge_colors = self.__Graph.new_edge_property("vector<double>")
+        self.__edge_colors = self.__Graph.new_edge_property("vector<double>")        
         self.__dictionary = dict()
         self.__lost_nodes = set()
         self.__main_color = vertex_color
@@ -34,6 +34,44 @@ class HexagonalLattice:
         # add the initial vertex and expand the lattice
         self.add_vertex(pos)
         self.expand_lattice(pos)
+        
+        # add graph properties to the Graph properties
+        self.add_to_graph_edge_dictionary("edge colors", self.__edge_colors)
+        self.add_to_graph_vertex_dictionary("vertex colors", self.__vertex_colors)
+        self.add_to_graph_vertex_dictionary("vertex positions", self.__pos)
+        
+        #self.state = np.random.get_state()
+        state = self.__Graph.new_graph_property("object")
+        state[self.__Graph] = np.random.get_state()
+        self.__Graph.graph_properties["state"] = state
+        
+    
+    # add the attribute to the vertex properties of the graph with the
+    # key attribute_name    
+    def add_to_graph_vertex_dictionary(self, attribute_name, attribute):
+        self.__Graph.vertex_properties[attribute_name] = attribute
+    
+    # get vertex property    
+    def get_graph_vertex_property_from_dictionary(self, attribute_name):
+        return self.__Graph.vertex_properties[attribute_name]
+        
+    # add the attribute to the edge properties of the graph with the
+    # key attribute_name    
+    def add_to_graph_edge_dictionary(self, attribute_name, attribute):
+        self.__Graph.edge_properties[attribute_name] = attribute
+    
+    # get edge property    
+    def get_graph_edge_property_from_dictionary(self, attribute_name):
+        return self.__Graph.edge_properties[attribute_name]
+    
+    # add the attribute to the graph properties of the graph with the
+    # key attribute_name    
+    def add_to_graph_dictionary(self, attribute_name, attribute):
+        self.__Graph.graph_properties[attribute_name] = attribute
+        
+    # get graph property
+    def get_graph_property_from_dictionary(self, attribute_name):
+        return self.__Graph.graph_properties[attribute_name]
       
     # add a vertex (node) at the entered position with a certain color
     def add_vertex(self, pos):
@@ -165,8 +203,8 @@ class HexagonalLattice:
         # check for edge, if there isn't one add an edge
         if lost_node and not self.cfe(pos1, pos2):    
             self.__edge_colors[self.__Graph.add_edge(self.get_vertex(pos1), self.get_vertex(pos2))] = (.8, .5, 0, .5)
-        else:
-            print("STOPPED YOU!! :D")
+        #else:
+            #print("STOPPED YOU!! :D")
             
     # cfe = check for edge
     def cfe(self, pos1, pos2):
@@ -277,10 +315,13 @@ class HexagonalLattice:
                       edge_color=self.__edge_colors,
                       vertex_shape="hexagon", 
                       vertex_font_size=12,
-                      vertex_text=self.__Graph.vertex_index,
+                      #vertex_text=self.__Graph.vertex_index,
                       output_size=outputsize,
                       output=filename
                       )
+            
+    def save(self, filename):
+        self.__Graph.save(filename)
     
     # increases size by one if no parameters added
     # if parameter is entered changes size by that much
