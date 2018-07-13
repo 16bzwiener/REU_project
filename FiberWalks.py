@@ -8,11 +8,11 @@ Created on Fri Jun  8 13:27:10 2018
 
 import HexagonalLattice as HL
 import numpy as np
-import time
+import DataForRoot as DFR
 
 class BranchingFW:
     
-    def __init__(self, steps=100, outputsize=(500,500), dim=2, prob=10, filename):
+    def __init__(self, steps=100, outputsize=(500,500), dim=2, prob=20, filename="blank"):
         
         # these are the fields
         self.__lattice = HL.HexagonalLattice(outputsize=outputsize)
@@ -20,6 +20,9 @@ class BranchingFW:
         self.__pos_list = [[self.__pos, 1, self.__pos]]
         self.__pos_list_dict = dict()
         self.__pos_list_dict[(self.__pos)] = 0
+        self.__steps_done = 0
+        self.__prob_low = 50 - int(prob/2) - (prob%2)
+        self.__prob_high = 50 + int(prob/2)
         self.__current_tips = [self.__pos]
         self.__root_node_color = "green"
         self.__root_edge_color = (0,.5,0,.5)
@@ -34,14 +37,14 @@ class BranchingFW:
         for i in range(len(self.__pos_list)-1):
             self.__lattice.set_edge_color(self.__pos_list[i+1][0], self.__pos_list[i+1][2], self.__root_edge_color)
         self.__lattice.set_node_color((0,0), color="purple")
-        self.__lattice.display(save=1,outputsize=(500,500), filename=filename)
+        self.__lattice.add_objects_to_graph_properties(obj=[[DFR.DataForRoot(self.__pos_list, prob, self.__steps_done), "position_list"]])
+        #self.__lattice.display(save=1,outputsize=(500,500), filename=filename)
         self.__lattice.save(filename)
       
     def get_random_state(self):
         return self.__lattice.get_graph_property_from_dictionary("state")
         
     def step(self, pos):
-        
         _, valid = self.__lattice.get_neighbors(pos)        
 
         count = 0
@@ -62,11 +65,10 @@ class BranchingFW:
     
     def branch(self):
         rand = np.random.randint(100)
-        if (rand > 45 and rand < 55) or rand > 98:
+        if (rand > self.__prob_low and rand < self.__prob_high):
             return True
         else: 
             return False
-        #return False
     
     def expand(self, pos):
         indices, neighb = self.__lattice.get_neighbors(pos)
@@ -138,11 +140,10 @@ class BranchingFW:
             self.__lattice.take_over_node(pos, n)
             self.__pos_list[self.__pos_list_dict[pos]][1] += 1
         
-    def walk(self, steps=10):
+    def walk(self, steps):
         picNum = 1
         for i in range(steps):
             for p in self.__current_tips[:]:
-                #self.__lattice.display()
                 self.__pos = p
                 self.__current_tips.remove(p)
                 if not self.step(p):
@@ -165,14 +166,12 @@ class BranchingFW:
                                 break
                 else:
                     self.expand(self.__pos_list[-1][-1])
-                filename = "step" + str(picNum)
                 picNum += 1
                 
                               
             if len(self.__current_tips) == 0:
-                print(i)
+                self.__steps_done = i
                 break
-            print("HERE I AMMMMMMMMM ", i)
             
             
         

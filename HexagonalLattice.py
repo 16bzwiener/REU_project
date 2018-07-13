@@ -54,7 +54,7 @@ class HexagonalLattice:
     def add_objects_to_graph_properties(self, obj=[]):
         # add objects to the graph properties
         for o in obj:
-            graph_property = self.__Graph.new_edge_property("object")
+            graph_property = self.__Graph.new_graph_property("object")
             graph_property[self.__Graph] = o[0]
             self.__Graph.graph_properties[o[1]] = graph_property
     

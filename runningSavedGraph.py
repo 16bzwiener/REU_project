@@ -8,7 +8,9 @@ Created on Fri Jun 29 13:48:21 2018
 
 import graph_tool.all as gt
 
-g2 = gt.load_graph("my_graph.xml.gz")
+g2 = gt.load_graph("test.xml.gz")
+
+print(g2.graph_properties["position_list"].getProbability())
 
 gt.graph_draw(g2, 
               pos=g2.vertex_properties["vertex positions"], 
