@@ -14,7 +14,7 @@ import time
 class HexagonalLattice:
     
     # construct the lattice :D
-    def __init__(self, pos=(0,0), outputsize=(500,500), vertex_color="orange", dim=2):
+    def __init__(self, pos=(0,0), outputsize=(500,500), vertex_color="orange", dim=2, obj=[]):
         
         # fields of this class include outputsize, size, Graph, pos vertex prop,
         # colors vertex property, dictionary (dict), lost nodes (set), 
@@ -45,6 +45,18 @@ class HexagonalLattice:
         state[self.__Graph] = np.random.get_state()
         self.__Graph.graph_properties["state"] = state
         
+        # add objects to the 
+        for o in obj:
+            graph_property = self.__Graph.new_edge_property("object")
+            graph_property[self.__Graph] = o[0]
+            self.__Graph.graph_properties[o[1]] = graph_property
+    
+    def add_objects_to_graph_properties(self, obj=[]):
+        # add objects to the graph properties
+        for o in obj:
+            graph_property = self.__Graph.new_edge_property("object")
+            graph_property[self.__Graph] = o[0]
+            self.__Graph.graph_properties[o[1]] = graph_property
     
     # add the attribute to the vertex properties of the graph with the
     # key attribute_name    

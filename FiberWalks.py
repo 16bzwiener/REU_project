@@ -12,7 +12,7 @@ import time
 
 class BranchingFW:
     
-    def __init__(self, steps=100, outputsize=(500,500), dim=2):
+    def __init__(self, steps=100, outputsize=(500,500), dim=2, prob=10, filename):
         
         # these are the fields
         self.__lattice = HL.HexagonalLattice(outputsize=outputsize)
@@ -25,7 +25,17 @@ class BranchingFW:
         self.__root_edge_color = (0,.5,0,.5)
         self.__lattice.set_node_color(pos=self.__pos, color=self.__root_node_color)
         self.__deg = 45
+        
+        # let the Fiber Walk walk
         self.walk(steps=steps)
+        
+        # saving the graph
+        filename = str(filename) + ".xml.gz"
+        for i in range(len(self.__pos_list)-1):
+            self.__lattice.set_edge_color(self.__pos_list[i+1][0], self.__pos_list[i+1][2], self.__root_edge_color)
+        self.__lattice.set_node_color((0,0), color="purple")
+        self.__lattice.display(save=1,outputsize=(500,500), filename=filename)
+        self.__lattice.save(filename)
       
     def get_random_state(self):
         return self.__lattice.get_graph_property_from_dictionary("state")
@@ -157,8 +167,7 @@ class BranchingFW:
                     self.expand(self.__pos_list[-1][-1])
                 filename = "step" + str(picNum)
                 picNum += 1
-                #self.__lattice.display(outputsize=(500,500), filename=filename)
-                #input()
+                
                               
             if len(self.__current_tips) == 0:
                 print(i)
@@ -166,17 +175,6 @@ class BranchingFW:
             print("HERE I AMMMMMMMMM ", i)
             
             
-        filename = "potential" + str(time.time())
-        for i in range(len(self.__pos_list)-1):
-            self.__lattice.set_edge_color(self.__pos_list[i+1][0], self.__pos_list[i+1][2], self.__root_edge_color)
-        self.__lattice.set_node_color((0,0), color="purple")
-        self.__lattice.display(save=1,outputsize=(500,500), filename=filename)
         
-        #self.__lattice.save("my_graph.xml.gz")
-                   
-#state = np.random.get_state()   
-#walk = BranchingFW()
-#walk.walk()
-#np.random.set_state(walk.get_random_state())
-#walk2 = BranchingFW()
-#walk2.walk()
+        
+        
