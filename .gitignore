@@ -1,3 +1,7 @@
+#REU Project specific
+.xml
+.xml.gz
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
