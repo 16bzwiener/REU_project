@@ -122,7 +122,6 @@ class HexagonalLattice:
     def get_color_of_node(self, pos):
         if tuple(pos) in self.__dictionary:
             return self.__vertex_colors[self.get_from_dictionary(tuple(pos))]
-        
         return None
     
     # get the color of the edge
@@ -284,7 +283,8 @@ class HexagonalLattice:
         i = self.get_from_dictionary(pos2)
         neighbors = self.__Graph.get_out_neighbors(i)
         for n in neighbors:
-            self.connect(pos1, self.get_from_dictionary(int(n)))
+            if self.get_color_of_node(self.get_from_dictionary(int(n))) != "green":
+                self.connect(pos1, self.get_from_dictionary(int(n)))
         self.del_vertex(pos2)
         self.__Graph.reindex_edges()
     
