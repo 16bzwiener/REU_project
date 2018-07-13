@@ -275,7 +275,7 @@ class HexagonalLattice:
             last_index = self.get_last_index()
             last_node = self.__dictionary.pop(last_index)
         
-            self.__dictionary.pop(last_node)
+            self.__dictionary.pop(last_node, None)
             self.add_to_dict(last_node, pos_index)
             self.increase_size(size=-1)
     
