@@ -33,6 +33,7 @@ From: ubuntu:16.04
 
 %environment
 	export LC_ALL=C    #Required for pip to run correctly
-
+  export DISPLAY=:0  #Addresses "Failed to connect to Mir:" error
+  
 %runscript
   python3 /opt/REU_project/runfile.py "$@"
